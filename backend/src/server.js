@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import axios from "axios";
+import path from "path"
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js";
@@ -16,7 +17,10 @@ dotenv.config();
 const app = express();
 
 //middleware
-app.use(cors());
+if(process.env.NODE_ENV !== "production"){
+  app.use(cors());
+}
+
 app.use(express.json());
 
 app.use("/api/gemini", rateLimit({
@@ -36,8 +40,21 @@ app.use("/api/users", userRoutes);
 
 app.use("/api/gemini", geminiRouter);
 
+const __dirname = path.resolve();
 
 console.log("Gemini API Key loaded:", process.env.GEMINI_API_KEY ? "Yes ✅" : "No ❌");
+
+if(process.env.NODE_ENV === "production"){
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+app.get(/^\/(?!api).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+});
+};
+
+const frontendPath = path.join(__dirname, "../frontend/dist");
+console.log("Serving frontend from:", frontendPath);
+
 
 const PORT = process.env.PORT || 5000;
 connectDB().then(() => {
