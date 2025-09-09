@@ -12,14 +12,14 @@ const CreateEvent = () => {
     category: 'General',
     date: '',
     location: {
-      city: '',
-      lat: '',
-      lng: ''
+      city: ''
+      // lat: '',
+      // lng: ''
     }
   });
 
   const categories = [
-    'General', 'Music', 'Community', 'Food', 'Film', 'Tech', 'Art', 
+    'General', 'Music','Dance', 'Community', 'Food', 'Film', 'Tech', 'Art', 
     'Fitness', 'Sports', 'Education', 'Business', 'Health', 'Travel'
   ];
 
@@ -48,35 +48,9 @@ const CreateEvent = () => {
       setError('Please enter a city name first');
       return;
     }
+  }
 
-    try {
-      // Using a simple geocoding approach - in production, you'd use a proper geocoding service
-      const response = await fetch(
-        `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(formData.location.city)}&limit=1&appid=demo`
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.length > 0) {
-          setFormData(prev => ({
-            ...prev,
-            location: {
-              ...prev.location,
-              lat: data[0].lat.toString(),
-              lng: data[0].lon.toString()
-            }
-          }));
-          setError('');
-        } else {
-          setError('City not found. Please enter coordinates manually.');
-        }
-      } else {
-        setError('Unable to fetch coordinates. Please enter them manually.');
-      }
-    } catch (err) {
-      setError('Unable to fetch coordinates. Please enter them manually.');
-    }
-  };
+    
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -108,11 +82,7 @@ const CreateEvent = () => {
       return;
     }
 
-    // if (!formData.location.lat || !formData.location.lng) {
-    //   setError('Event coordinates are required. Please search for location or enter manually.');
-    //   setLoading(false);
-    //   return;
-    // }
+   
 
     // Check if date is in the future
     const eventDate = new Date(formData.date);
@@ -130,9 +100,7 @@ const CreateEvent = () => {
         category: formData.category,
         date: eventDate.toISOString(),
         location: {
-          city: formData.location.city.trim(),
-          lat: parseFloat(formData.location.lat),
-          lng: parseFloat(formData.location.lng)
+          city: formData.location.city.trim()
         }
       };
 
@@ -149,278 +117,159 @@ const CreateEvent = () => {
   };
 
   return (
-    <section className="section">
-      <div className="container">
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          {/* Header */}
-          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <h1 style={{ margin: '0 0 8px 0', fontSize: '2.5rem' }}>Create New Event</h1>
-            <p style={{ color: 'var(--muted)', margin: 0, fontSize: '1.1rem' }}>
-              Share your event with the community
-            </p>
+  <section className="section py-10">
+    <div className="container mx-auto px-4">
+      <div className="max-w-3xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold mb-2">Create New Event</h1>
+          <p className="text-gray-400 text-lg m-0">
+            Share your event with the community
+          </p>
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-500 text-white p-4 rounded mb-6">
+            {error}
+          </div>
+        )}
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="bg-white/10 backdrop-blur-lg rounded-xl shadow p-6">
+          {/* Event Title */}
+          <div className="mb-6">
+            <label htmlFor="title" className="block font-semibold mb-2 text-gray-100">
+              Event Title *
+            </label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              className="input w-full"
+              placeholder="Enter event title"
+              required
+            />
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="card" style={{ 
-              background: 'var(--danger)', 
-              color: 'white', 
-              marginBottom: '1.5rem',
-              padding: '1rem'
-            }}>
-              {error}
-            </div>
-          )}
+          {/* Event Description */}
+          <div className="mb-6">
+            <label htmlFor="description" className="block font-semibold mb-2 text-gray-100">
+              Event Description *
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              className="input w-full resize-y"
+              placeholder="Describe your event in detail..."
+              required
+              rows={4}
+            />
+          </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="card glass">
-            <div className="body">
-              {/* Event Title */}
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label htmlFor="title" style={{ 
-                  display: 'block', 
-                  marginBottom: '0.5rem', 
-                  fontWeight: '600',
-                  color: 'var(--text)'
-                }}>
-                  Event Title *
-                </label>
+          {/* Category & Date */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {/* Category */}
+            <div>
+              <label htmlFor="category" className="block font-semibold mb-2 text-gray-100">
+                Category
+              </label>
+              <select
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={handleInputChange}
+                className="input w-full"
+              >
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Date */}
+            <div>
+              <label htmlFor="date" className="block font-semibold mb-2 text-gray-100">
+                Event Date & Time *
+              </label>
+              <input
+                type="datetime-local"
+                id="date"
+                name="date"
+                value={formData.date}
+                onChange={handleInputChange}
+                className="input w-full"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Location */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-100 mb-4">Event Location *</h3>
+
+            {/* City */}
+            <div className="mb-4">
+              <label htmlFor="city" className="block font-semibold mb-2 text-gray-100">
+                City
+              </label>
+              <div className="flex gap-2">
                 <input
                   type="text"
-                  id="title"
-                  name="title"
-                  value={formData.title}
+                  id="city"
+                  name="location.city"
+                  value={formData.location.city}
                   onChange={handleInputChange}
-                  className="input"
-                  placeholder="Enter event title"
+                  className="input flex-1"
+                  placeholder="Enter city name"
                   required
-                  style={{ width: '100%' }}
                 />
-              </div>
-
-              {/* Event Description */}
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label htmlFor="description" style={{ 
-                  display: 'block', 
-                  marginBottom: '0.5rem', 
-                  fontWeight: '600',
-                  color: 'var(--text)'
-                }}>
-                  Event Description *
-                </label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  className="input"
-                  placeholder="Describe your event in detail..."
-                  required
-                  rows={4}
-                  style={{ width: '100%', resize: 'vertical' }}
-                />
-              </div>
-
-              {/* Category and Date Row */}
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: '1fr 1fr', 
-                gap: '1.5rem',
-                marginBottom: '1.5rem'
-              }}>
-                {/* Category */}
-                <div>
-                  <label htmlFor="category" style={{ 
-                    display: 'block', 
-                    marginBottom: '0.5rem', 
-                    fontWeight: '600',
-                    color: 'var(--text)'
-                  }}>
-                    Category
-                  </label>
-                  <select
-                    id="category"
-                    name="category"
-                    value={formData.category}
-                    onChange={handleInputChange}
-                    className="input"
-                    style={{ width: '100%' }}
-                  >
-                    {categories.map(category => (
-                      <option key={category} value={category}>
-                        {category}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Date */}
-                <div>
-                  <label htmlFor="date" style={{ 
-                    display: 'block', 
-                    marginBottom: '0.5rem', 
-                    fontWeight: '600',
-                    color: 'var(--text)'
-                  }}>
-                    Event Date & Time *
-                  </label>
-                  <input
-                    type="datetime-local"
-                    id="date"
-                    name="date"
-                    value={formData.date}
-                    onChange={handleInputChange}
-                    className="input"
-                    required
-                    style={{ width: '100%' }}
-                  />
-                </div>
-              </div>
-
-              {/* Location Section */}
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ 
-                  margin: '0 0 1rem 0', 
-                  fontSize: '1.2rem',
-                  color: 'var(--text)'
-                }}>
-                  Event Location *
-                </h3>
-                
-                {/* City */}
-                <div style={{ marginBottom: '1rem' }}>
-                  <label htmlFor="city" style={{ 
-                    display: 'block', 
-                    marginBottom: '0.5rem', 
-                    fontWeight: '600',
-                    color: 'var(--text)'
-                  }}>
-                    City
-                  </label>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <input
-                      type="text"
-                      id="city"
-                      name="location.city"
-                      value={formData.location.city}
-                      onChange={handleInputChange}
-                      className="input"
-                      placeholder="Enter city name"
-                      required
-                      style={{ flex: 1 }}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleLocationSearch}
-                      className="btn btn-secondary"
-                      style={{ whiteSpace: 'nowrap' }}
-                    >
-                      Get Coordinates
-                    </button>
-                  </div>
-                </div>
-
-                {/* Coordinates */}
-                <div style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: '1fr 1fr', 
-                  gap: '1rem'
-                }}>
-                  <div>
-                    <label htmlFor="lat" style={{ 
-                      display: 'block', 
-                      marginBottom: '0.5rem', 
-                      fontWeight: '600',
-                      color: 'var(--text)'
-                    }}>
-                      Latitude
-                    </label>
-                    <input
-                      type="number"
-                      id="lat"
-                      name="location.lat"
-                      value={formData.location.lat}
-                      onChange={handleInputChange}
-                      className="input"
-                      placeholder="e.g., 40.7128"
-                      step="any"
-                      required
-                      style={{ width: '100%' }}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="lng" style={{ 
-                      display: 'block', 
-                      marginBottom: '0.5rem', 
-                      fontWeight: '600',
-                      color: 'var(--text)'
-                    }}>
-                      Longitude
-                    </label>
-                    <input
-                      type="number"
-                      id="lng"
-                      name="location.lng"
-                      value={formData.location.lng}
-                      onChange={handleInputChange}
-                      className="input"
-                      placeholder="e.g., -74.0060"
-                      step="any"
-                      required
-                      style={{ width: '100%' }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Submit Buttons */}
-              <div style={{ 
-                display: 'flex', 
-                gap: '1rem', 
-                justifyContent: 'flex-end',
-                marginTop: '2rem'
-              }}>
-                <button
-                  type="button"
-                  onClick={() => navigate('/events')}
-                  className="btn btn-ghost"
-                  disabled={loading}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={loading}
-                  style={{ minWidth: '120px' }}
-                >
-                  {loading ? 'Creating...' : 'Create Event'}
-                </button>
               </div>
             </div>
-          </form>
-
-          {/* Help Text */}
-          <div className="card" style={{ 
-            marginTop: '1.5rem', 
-            background: 'var(--muted)', 
-            color: 'var(--text)',
-            padding: '1rem'
-          }}>
-            <h4 style={{ margin: '0 0 0.5rem 0' }}>💡 Tips for creating a great event:</h4>
-            <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
-              <li>Write a clear, engaging title that describes your event</li>
-              <li>Provide detailed description including what attendees can expect</li>
-              <li>Choose the most appropriate category for better discoverability</li>
-              <li>Set the date and time clearly - events must be in the future</li>
-              <li>Ensure location coordinates are accurate for proper mapping</li>
-            </ul>
           </div>
+
+          {/* Buttons */}
+          <div className="flex justify-end gap-4 mt-6">
+            <button
+              type="button"
+              onClick={() => navigate('/events')}
+              className="btn btn-ghost"
+              disabled={loading}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn btn-primary min-w-[120px]"
+              disabled={loading}
+            >
+              {loading ? 'Creating...' : 'Create Event'}
+            </button>
+          </div>
+        </form>
+
+        {/* Help Text */}
+        <div className="bg-gray-700 text-gray-100 rounded p-4 mt-6">
+          <h4 className="font-semibold mb-2">💡 Tips for creating a great event:</h4>
+          <ul className="list-disc pl-5 m-0">
+            <li>Write a clear, engaging title that describes your event</li>
+            <li>Provide detailed description including what attendees can expect</li>
+            <li>Choose the most appropriate category for better discoverability</li>
+            <li>Set the date and time clearly - events must be in the future</li>
+            <li>Ensure location coordinates are accurate for proper mapping</li>
+          </ul>
         </div>
       </div>
-    </section>
-  );
+    </div>
+  </section>
+);
+
 };
 
-export default CreateEvent;
-
+export default CreateEvent ;

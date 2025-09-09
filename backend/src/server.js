@@ -17,9 +17,14 @@ dotenv.config();
 const app = express();
 
 //middleware
-if(process.env.NODE_ENV !== "production"){
-  app.use(cors());
-}
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? [process.env.FRONTEND_URL, 'http://localhost:3000'] 
+    : true,
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
@@ -43,18 +48,6 @@ app.use("/api/gemini", geminiRouter);
 const __dirname = path.resolve();
 
 console.log("Gemini API Key loaded:", process.env.GEMINI_API_KEY ? "Yes ✅" : "No ❌");
-
-if(process.env.NODE_ENV === "production"){
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
-
-app.get(/^\/(?!api).*/, (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
-});
-};
-
-const frontendPath = path.join(__dirname, "../frontend/dist");
-console.log("Serving frontend from:", frontendPath);
-
 
 const PORT = process.env.PORT || 5000;
 connectDB().then(() => {

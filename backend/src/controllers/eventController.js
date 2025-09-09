@@ -58,9 +58,14 @@ export const getEventById = async (req, res) => {
 export const joinEvent = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
-    if (!event) return res.status(404).json({ message: "Event not found" });
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
 
-    if (!event.attendees.includes(req.user.id)) {
+    // ✅ Safe ObjectId check
+    const alreadyJoined = event.attendees.some(att => att.equals(req.user.id));
+
+    if (!alreadyJoined) {
       event.attendees.push(req.user.id);
       await event.save();
     }
@@ -74,3 +79,4 @@ export const joinEvent = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
