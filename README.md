@@ -1,13 +1,17 @@
-#  BUZZHUB  
-A modern **MERN Stack** platform designed for seamless content sharing, user engagement, and a smooth social-media–like experience.
+# BUZZHUB  
+A modern **MERN Stack** event management platform where users can create events, explore ongoing events, and stay updated with what’s happening around them.
 
 ---
 
-## 📖 About the Project
-**BUZZHUB** is a full-stack MERN application built to enable users to create, interact, and share content.  
-It includes a responsive UI, secure backend APIs, and a scalable architecture suitable for real-world applications.
+## About the Project
+**BUZZHUB** is a full-stack MERN application designed to simplify event discovery and event creation.  
+Users can:
 
----
+- Create and manage their own events  
+- Explore events happening around them  
+- View event details in a clean and responsive interface  
+- Stay updated with ongoing and trending events  
+
 
 ## ⭐ Features
 
@@ -96,6 +100,5 @@ npm start
 ### Screenshots / Demo
 [Home Page]<img width="1609" height="908" alt="image" src="https://github.com/user-attachments/assets/b759ca47-f797-4ca6-b0a6-777d31158d96" />
 
-[Login Page](./screenshots/login.png)
 
 
